@@ -41,7 +41,7 @@ namespace Cw3.Controllers
                         var st = new Student();
                         st.FirstName = dr["FirstName"].ToString();
                         st.LastName = dr["LastName"].ToString();
-                        st.BirthDate = dr["BirthDate"].ToString();
+                        st.BirthDate = (DateTime)dr["BirthDate"];
                         st.Studies = dr["Name"].ToString();
                         st.Semester = int.Parse(dr["SEMESTER"].ToString());
                         list.Add(st);
