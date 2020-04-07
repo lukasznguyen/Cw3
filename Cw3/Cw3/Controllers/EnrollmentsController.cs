@@ -78,7 +78,7 @@ namespace Cw3.Controllers
                     else
                     {
                         var indexnumber = dr["indexnumber"];
-                        if (indexnumber.Equals(st.IndexNumber){
+                        if (indexnumber.Equals(st.IndexNumber)){
                             tran.Rollback();
                             return BadRequest("Indeks nie jest unikalny");
                         }
