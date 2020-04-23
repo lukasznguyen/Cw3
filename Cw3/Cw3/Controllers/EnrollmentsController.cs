@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Cw3.DTOs.Requests;
 using Cw3.DTOs.Responses;
 using Cw3.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Cw3.Controllers
 {
@@ -16,7 +24,15 @@ namespace Cw3.Controllers
     public class EnrollmentsController : ControllerBase
     {
         String connection = "Data Source=db-mssql;Initial Catalog=s18964;Integrated Security=True";
+        public IConfiguration Configuration { get; set; }
+
+        public EnrollmentsController(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         [HttpPost]
+        [Route("enroll")]
+        [Authorize(Roles = "employee")]
         public IActionResult EnrollStudent(EnrollStudentRequest request)
         {
             var st = new Student();
@@ -91,6 +107,154 @@ namespace Cw3.Controllers
             response.Semester = st.Semester;
             response.StartDate = DateTime.Now;
             return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("promote")]
+        [Authorize(Roles = "employee")]
+        public IActionResult PromoteStudent()
+        {
+            return Ok();
+        }
+        
+        [HttpPost]
+        [Route("login")]
+        public IActionResult Login(LoginRequestDto request)
+        {
+            //
+            var salt = EnrollmentsController.CreateSalt();
+            var password = EnrollmentsController.Create("brokuly", salt);
+            Console.WriteLine("Salt: " + salt);
+            Console.WriteLine("Password: " + password);
+            //
+            string login;
+            string imie;
+            using (var client = new SqlConnection(connection))
+            using (var command = new SqlCommand())
+            {
+                client.Open();
+                command.Connection = client;
+                command.CommandText = "SELECT * FROM student WHERE indexnumber = @indexnumber";
+                command.Parameters.AddWithValue("indexnumber", request.Login);
+                var dr = command.ExecuteReader();
+                if (!dr.Read())
+                {
+                    return Unauthorized("Zly login lub haslo");
+                }
+                if (!Validate(request.Haslo, dr["salt"].ToString(), dr["password"].ToString()))
+                {
+                    return Unauthorized("Zly login lub haslo");
+                }
+                login = dr["IndexNumber"].ToString();
+                imie = dr["FirstName"].ToString();
+            }
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, login),
+                new Claim(ClaimTypes.Name, imie),
+                new Claim(ClaimTypes.Role, "employee")
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken
+            (
+                issuer: "Admin",
+                audience: "Employees",
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(10),
+                signingCredentials: creds
+            );
+
+            var refreshtoken = Guid.NewGuid();
+            setRefreshTokenInDB(refreshtoken.ToString(), login);
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                refreshtoken
+            });
+        }
+
+        [HttpPost]
+        [Route("refreshtoken/{FToken}")]
+        public IActionResult TokenFromRefreshToken(String FToken)
+        {
+            string login = "";
+            string imie = "";
+            using(var client = new SqlConnection(connection))
+            using (var comm = new SqlCommand())
+            {
+                client.Open();
+                comm.Connection = client;
+                comm.CommandText = "SELECT indexnumber, firstname FROM student WHERE refreshtoken=@refreshtoken";
+                comm.Parameters.AddWithValue("refreshtoken", FToken);
+                var dr = comm.ExecuteReader();
+                if (!dr.Read())
+                {
+                    return Unauthorized("Bledny Token");
+                }
+                login = dr["indexnumber"].ToString();
+                imie = dr["firstname"].ToString();
+            }
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, login),
+                new Claim(ClaimTypes.Name, imie),
+                new Claim(ClaimTypes.Role, "employee")
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken
+            (
+                issuer: "Admin",
+                audience: "Employees",
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(10),
+                signingCredentials: creds
+            );
+
+            var refreshtoken = Guid.NewGuid();
+            setRefreshTokenInDB(refreshtoken.ToString(), login);
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                refreshtoken
+            });
+        }
+        public void setRefreshTokenInDB(String token, string login)
+        {
+            using(var client = new SqlConnection(connection))
+            using (var comm = new SqlCommand())
+            {
+                client.Open();
+                comm.Connection = client;
+                comm.CommandText = "UPDATE STUDENT SET Refreshtoken = @token WHERE indexnumber = @index";
+                comm.Parameters.AddWithValue("index", login);
+                comm.Parameters.AddWithValue("token", token);
+                comm.ExecuteNonQuery();
+            }
+        }
+
+        public static string Create(string value, string salt)
+        {
+            var valueBytes = KeyDerivation.Pbkdf2(
+                password: value,
+                salt: Encoding.UTF8.GetBytes(salt),
+                prf: KeyDerivationPrf.HMACSHA512,
+                iterationCount: 1000,
+                numBytesRequested: 256 / 8);
+            return Convert.ToBase64String(valueBytes);
+        }
+
+        public static bool Validate(string value, string salt, string hash) => Create(value, salt) == hash;
+
+        public static string CreateSalt()
+        {
+            byte[] randomBytes = new byte[128 / 8];
+            using(var generator = RandomNumberGenerator.Create())
+            {
+                generator.GetBytes(randomBytes);
+                return Convert.ToBase64String(randomBytes);
+            }
         }
     }
 }

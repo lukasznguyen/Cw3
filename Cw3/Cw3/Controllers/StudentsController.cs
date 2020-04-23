@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Cw3.DAL;
+using Cw3.DTOs.Requests;
 using Cw3.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Cw3.Controllers
 {
@@ -16,7 +22,7 @@ namespace Cw3.Controllers
     {
         String connection = "Data Source=db-mssql;Initial Catalog=s18964;Integrated Security=True";
         private readonly IDbService _dbservice;
-
+        
         public StudentsController(IDbService dbService)
         {
             _dbservice = dbService;
@@ -102,6 +108,8 @@ namespace Cw3.Controllers
         {
             return Ok("Usuwanie ukonczone");
         }
+
+       
 
     }
 }
