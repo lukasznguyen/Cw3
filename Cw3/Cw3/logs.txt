@@ -187,3 +187,103 @@
 	"Login": "s0001",
 	"Haslo": "brokuly"
 }
+15.05.2020 20:02:29 /weatherforecast GET 
+15.05.2020 20:02:34 /students GET 
+15.05.2020 20:02:40 /api/students GET 
+15.05.2020 20:02:46 /favicon.ico GET 
+16.05.2020 17:58:49 /weatherforecast GET 
+16.05.2020 17:58:53 /api/students GET 
+16.05.2020 17:58:57 /favicon.ico GET 
+16.05.2020 17:59:22 /api/students GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 18:04:17 /weatherforecast GET 
+16.05.2020 18:04:18 /weatherforecast GET 
+16.05.2020 18:05:09 /api/students/s001 GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 18:05:17 /api/students/s0001 GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 18:05:39 /api/students/s0001 GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 18:06:17 /weatherforecast GET 
+16.05.2020 18:06:24 /api/students/s0001 GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 18:10:56 /weatherforecast GET 
+16.05.2020 18:11:13 /api/students/s0001 PUT {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:11:19 /weatherforecast GET 
+16.05.2020 20:11:37 /api/students GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:12:05 /api/students/s0001 GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:14:54 /weatherforecast GET 
+16.05.2020 20:15:06 /api/students GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:17:59 /weatherforecast GET 
+16.05.2020 20:18:01 /api/students GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:18:20 /weatherforecast GET 
+16.05.2020 20:18:25 /api/students GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:18:35 /api/students/s0001 GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:19:51 /api/students/s0001 PUT {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:22:45 /weatherforecast GET 
+16.05.2020 20:23:09 /weatherforecast GET 
+16.05.2020 20:23:21 /api/students GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:24:04 /weatherforecast GET 
+16.05.2020 20:24:06 /api/students GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:28:31 /weatherforecast GET 
+16.05.2020 20:28:37 /api/students GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:28:57 /weatherforecast GET 
+16.05.2020 20:28:59 /api/students GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:29:11 /api/students/s0001 GET {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:29:25 /api/students/s0001 PUT {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}
+16.05.2020 20:30:17 /api/students/s0001 DELETE {
+	"Login": "s0001",
+	"Haslo": "brokuly"
+}

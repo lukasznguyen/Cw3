@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using Cw3.DAL;
 using Cw3.Handlers;
 using Cw3.Middleware;
+using Cw3.Models2;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -49,6 +51,7 @@ namespace Cw3
 
                     };
                 });
+            services.AddScoped<DbContext,s18964Context> ();
             services.AddTransient<IDbService, MockDbService>();
             services.AddSingleton<IDbService, MockDbService>();
             services.AddControllers();
